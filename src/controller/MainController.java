@@ -5,16 +5,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
+import model.DataModel;
 import view.MainFrame;
 
 public class MainController {
 
 	private MainFrame view;
+	private DataModel model;
 	
-	// TODO: add model when you finish it
-	public MainController(MainFrame view) {
+	public MainController(MainFrame view, DataModel model) {
 		this.view = view;
+		this.model = model;
 		
+		view.addDataToTable(model.getHeader(), model.getData()); // move this later to the new listener
 		addListenersForMenuItems();
 		addListenersForToolbarBtns();
 	}

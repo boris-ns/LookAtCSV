@@ -9,8 +9,11 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 
 public class MainFrame extends JFrame {
 	
@@ -22,6 +25,7 @@ public class MainFrame extends JFrame {
 	
 	private JMenuBar menuBar;
 	private JToolBar toolbar;
+	private JScrollPane tableScroller;
 	private JTable dataTable;
 
 	public MainFrame() {
@@ -38,7 +42,8 @@ public class MainFrame extends JFrame {
 		initToolbar();
 		
 		dataTable = new JTable();
-		add(dataTable, BorderLayout.CENTER);
+		tableScroller = new JScrollPane(dataTable);
+		add(tableScroller, BorderLayout.CENTER);
 		
 		setVisible(true);
 	}
@@ -131,5 +136,9 @@ public class MainFrame extends JFrame {
 		}
 		
 		button.addActionListener(al);
+	}
+	
+	public void addDataToTable(String[] header, Object[][] data) {
+		dataTable.setModel(new DefaultTableModel(data, header));
 	}
 }
