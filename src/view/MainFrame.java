@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -12,8 +13,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
+import utils.ImageLoader;
 
 public class MainFrame extends JFrame {
 	
@@ -85,9 +88,9 @@ public class MainFrame extends JFrame {
 		toolbar = new JToolBar();
 		add(toolbar, BorderLayout.NORTH);
 		
-		addButtonToToolbar(toolbar, "New row");
-		addButtonToToolbar(toolbar, "Delete row");
-		addButtonToToolbar(toolbar, "Save");
+		addButtonToToolbar(toolbar, "New row", "res/icons/row_add.png");
+		addButtonToToolbar(toolbar, "Delete row", "res/icons/row_delete.png");
+		addButtonToToolbar(toolbar, "Save", "res/icons/save.png");
 	}
 
 	/**
@@ -103,9 +106,9 @@ public class MainFrame extends JFrame {
 	/**
 	 * Creates new JButton and adds it to the toolbar
 	 */
-	// TODO: change this so insted of text there will be icon on the new button
-	private void addButtonToToolbar(JToolBar toolbar, String btnName) {
+	private void addButtonToToolbar(JToolBar toolbar, String btnName, String iconPath) {
 		JButton button = new JButton(btnName);
+		button.setIcon(new ImageIcon(ImageLoader.loadImage(iconPath)));
 		toolbar.add(button);
 	}
 	
@@ -138,7 +141,34 @@ public class MainFrame extends JFrame {
 		button.addActionListener(al);
 	}
 	
+	public void addDataToTable(TableModel model) {
+		dataTable.setModel(model);
+	}
+	
 	public void addDataToTable(String[] header, Object[][] data) {
 		dataTable.setModel(new DefaultTableModel(data, header));
+	}
+	
+	public void addRowToTable(Object[] row) {
+		DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+		model.addRow(row);
+	}
+	
+	public void addColumnToTable(String columnName) {
+		DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+		model.addColumn(columnName);
+	}
+	
+	public void removeRow(int rowIndex) {
+		DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+		model.removeRow(rowIndex);
+	}
+	
+	public void clearTableSelection() {
+		dataTable.clearSelection();
+	}
+	
+	public int[] getSelectedRows() {
+		return dataTable.getSelectedRows();
 	}
 }
