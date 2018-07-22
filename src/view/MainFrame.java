@@ -146,7 +146,7 @@ public class MainFrame extends JFrame {
 		button.addActionListener(al);
 	}
 	
-	public void addDataToTable(TableModel model) {
+	public void setTableModel(TableModel model) {
 		dataTable.setModel(model);
 	}
 	

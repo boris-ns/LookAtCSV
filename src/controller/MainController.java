@@ -65,8 +65,10 @@ public class MainController {
 
 			if (option == JOptionPane.OK_OPTION) {
 				model.createEmptyModel(header.getText());
-				view.addDataToTable(model.getHeader(), model.getData());
+				view.setTableModel(model);
+				model.fireTableDataChanged();
 				view.enableCommands(true);
+				view.setStatusBarText("Created new file.");
 			}
 		}
 	}
@@ -81,7 +83,7 @@ public class MainController {
 			if (retVal == JFileChooser.APPROVE_OPTION) {
 				String path = chooser.getSelectedFile().getAbsolutePath();
 				model.readData(path);
-				view.addDataToTable(model.getHeader(), model.getData());
+				view.setTableModel(model);
 				view.setStatusBarText("Opened file with " + model.getDataSize() + " rows.");
 				view.setTitle(Constants.APP_NAME + " [" + path + "]");
 				view.enableCommands(true);
@@ -143,15 +145,15 @@ public class MainController {
 	class AddRowListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO: create real model, because if adding rows stays like this
-			// model will be in View
-			view.addRowToTable(new Object[model.getHeader().length]);
+			model.addRow();
+			model.fireTableDataChanged();
 			view.scrollToBottom();
-			System.out.println("ROW: " + model.getData().length);
-			System.out.println("New row is added.");
+			view.setStatusBarText("Added new row.");
+			System.out.println("Added new row.");
 		}
 	}
-	
+
+	// TODO: Fix this, currently NOT WORKING
 	class AddColumnListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -160,8 +162,9 @@ public class MainController {
 			// If user presses Cancel or input string is empty
 			if (colName == null || colName.equals(""))
 				return;
-			
-			view.addColumnToTable(colName);
+
+			model.addColumn(colName);
+			model.fireTableDataChanged();
 			System.out.println("New column " + colName + " is added.");
 		}
 	}
@@ -176,10 +179,16 @@ public class MainController {
 			
 			// Removing must be from last to first, otherwise there will be exceptions
 			for (int i = selectedRows.length - 1; i >= 0; --i) {
-				view.removeRow(selectedRows[i]);
+				model.removeRow(i);
+				model.fireTableDataChanged();
 				System.out.println("Row " + selectedRows[i] + " deleted.");
 			}
-			
+
+			if (selectedRows.length == 1)
+				view.setStatusBarText("Row deleted.");
+			else
+				view.setStatusBarText("Multiple rows deleted.");
+
 			view.clearTableSelection();
 		}
 	}

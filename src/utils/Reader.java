@@ -42,7 +42,7 @@ public class Reader {
 	 * Skips first line of file (header) and reads all other lines.
 	 * Parses each line into tokens and fills Object[][] array which is returned.
 	 */
-	public static Object[][] readCSVData(String path) {
+	public static ArrayList<ArrayList<String>> readCSVData(String path) {
 		Object[][] data = null;
 		ArrayList<ArrayList<String>> dataList = new ArrayList<ArrayList<String>>();
 		
@@ -57,7 +57,7 @@ public class Reader {
 				dataList.add(temp);
 			}
 
-			data = convertArrayList(dataList);
+			//data = convertArrayList(dataList);
 			reader.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found: " + path);
@@ -67,7 +67,7 @@ public class Reader {
 			e.printStackTrace();
 		}
 		
-		return data;
+		return dataList;
 	}
 	
 	/**

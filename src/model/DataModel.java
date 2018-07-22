@@ -2,33 +2,75 @@ package model;
 
 import utils.Reader;
 
-public class DataModel {
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-	private String[] header;
-	private Object[][] data;
+public class DataModel extends AbstractTableModel {
+
+	private ArrayList<String> header;
+	private ArrayList<ArrayList<String>> data;
 	
 	public DataModel() {
+		header = new ArrayList<String>();
+		data   = new ArrayList<ArrayList<String>>();
 	}
 
 	public void readData(String path) {
-		header = Reader.readCSVHeader(path);
+		String[] h = Reader.readCSVHeader(path);
+		header = new ArrayList<String>(Arrays.asList(h));
 		data   = Reader.readCSVData(path);
 	}
 
 	public void createEmptyModel(String header) {
-		this.header = header.split(",");
-		this.data = new Object[0][0];
-	}
-
-	public String[] getHeader() {
-		return header;
-	}
-	
-	public Object[][] getData() {
-		return data;
+		this.header = new ArrayList<String>(Arrays.asList(header.split(",")));
+		this.data.clear();
 	}
 
 	public int getDataSize() {
-		return data.length;
+		return data.size();
+	}
+
+	public void addRow() {
+		String[] row = new String[getColumnCount()];
+		data.add(new ArrayList<String>(Arrays.asList(row)));
+	}
+
+	public void removeRow(int row) {
+		data.remove(row);
+	}
+
+	public void addColumn(String columnName) {
+		// TODO: fix
+		header.add(columnName);
+
+		for (int i = 0; i < data.size(); ++i) {
+			data.get(i).add("");
+		}
+	}
+
+	@Override
+	public String getColumnName(int column) {
+		return header.get(column);
+	}
+
+	@Override
+	public int getRowCount() {
+		return data.size();
+	}
+
+	@Override
+	public int getColumnCount() {
+		return header.size();
+	}
+
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		return true;
+	}
+
+	@Override
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		return data.get(rowIndex).get(columnIndex);
 	}
 }
