@@ -3,8 +3,9 @@ package controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
+import common.Constants;
 import model.DataModel;
 import view.MainFrame;
 
@@ -16,14 +17,15 @@ public class MainController {
 	public MainController(MainFrame view, DataModel model) {
 		this.view = view;
 		this.model = model;
-		
-		view.addDataToTable(model.getHeader(), model.getData()); // move this later to the new listener
+
 		addListenersForMenuItems();
 		addListenersForToolbarBtns();
 	}
 	
 	private void addListenersForMenuItems() {
 		// File menu
+		view.setMenuItemListener(new NewListener(), "New");
+		view.setMenuItemListener(new OpenListener(), "Open");
 		view.setMenuItemListener(new ExitListener(), "Exit");
 		
 		// Edit menu
@@ -45,14 +47,45 @@ public class MainController {
 	class NewListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO: finish this, new dialog will ask to enter header of csv (id,name,surname)
+			JTextField header = new JTextField("id,username,password");
+
+			Object[] message = new Object[] {
+				"Enter CSV header", header
+			};
+
+			int option = JOptionPane.showConfirmDialog(null, message,
+											"New file", JOptionPane.OK_CANCEL_OPTION);
+
+			while ((header.getText().isEmpty()) && option != JOptionPane.CANCEL_OPTION) {
+				JOptionPane.showMessageDialog(null, "You must enter header of CSV file",
+						"Error", JOptionPane.ERROR_MESSAGE);
+				option = JOptionPane.showConfirmDialog(null, message,
+											"New file", JOptionPane.OK_CANCEL_OPTION);
+			}
+
+			if (option == JOptionPane.OK_OPTION) {
+				model.createEmptyModel(header.getText());
+				view.addDataToTable(model.getHeader(), model.getData());
+				view.enableCommands(true);
+			}
 		}
 	}
 	
 	class OpenListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO: finish this, jfilechooser to open file, and update table
+			JFileChooser chooser = new JFileChooser();
+
+			int retVal = chooser.showOpenDialog(chooser);
+
+			if (retVal == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getAbsolutePath();
+				model.readData(path);
+				view.addDataToTable(model.getHeader(), model.getData());
+				view.setStatusBarText("Opened file with " + model.getDataSize() + " rows.");
+				view.setTitle(Constants.APP_NAME + " [" + path + "]");
+				view.enableCommands(true);
+			}
 		}
 	}
 	
@@ -110,7 +143,11 @@ public class MainController {
 	class AddRowListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			// TODO: create real model, because if adding rows stays like this
+			// model will be in View
 			view.addRowToTable(new Object[model.getHeader().length]);
+			view.scrollToBottom();
+			System.out.println("ROW: " + model.getData().length);
 			System.out.println("New row is added.");
 		}
 	}

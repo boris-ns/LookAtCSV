@@ -4,25 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import common.Constants;
 import utils.ImageLoader;
 
 public class MainFrame extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
-	private static final int WIDTH  = 640;
-	private static final int HEIGHT = 480;
+	private static final int WIDTH  = 1024;
+	private static final int HEIGHT = 768;
 
 	private HashMap<String, JMenuItem> menuItems;
 	
@@ -30,24 +23,32 @@ public class MainFrame extends JFrame {
 	private JToolBar toolbar;
 	private JScrollPane tableScroller;
 	private JTable dataTable;
+	private JButton btnAddRow, btnDeleteRow, btnSave;
+
+	private StatusBar statusBar;
 
 	public MainFrame() {
 		menuItems = new HashMap<String, JMenuItem>();
 
-		setTitle("Look At CSV");
+		setTitle(Constants.APP_NAME);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);
 		setResizable(true);
 		setLayout(new BorderLayout());
-		
+
+		statusBar = new StatusBar("Ready");
+		add(statusBar, BorderLayout.SOUTH);
+
 		initMenu();
 		initToolbar();
 		
 		dataTable = new JTable();
 		tableScroller = new JScrollPane(dataTable);
 		add(tableScroller, BorderLayout.CENTER);
-		
+
+		enableCommands(false);
+
 		setVisible(true);
 	}
 	
@@ -87,10 +88,14 @@ public class MainFrame extends JFrame {
 	private void initToolbar() {
 		toolbar = new JToolBar();
 		add(toolbar, BorderLayout.NORTH);
-		
-		addButtonToToolbar(toolbar, "New row", "res/icons/row_add.png");
-		addButtonToToolbar(toolbar, "Delete row", "res/icons/row_delete.png");
-		addButtonToToolbar(toolbar, "Save", "res/icons/save.png");
+
+		btnAddRow = new JButton();
+		btnDeleteRow = new JButton();
+		btnSave = new JButton();
+
+		addButtonToToolbar(toolbar, btnAddRow, "Add row", "res/icons/row_add.png");
+		addButtonToToolbar(toolbar, btnDeleteRow, "Delete row", "res/icons/row_delete.png");
+		addButtonToToolbar(toolbar, btnSave, "Save", "res/icons/save.png");
 	}
 
 	/**
@@ -106,10 +111,10 @@ public class MainFrame extends JFrame {
 	/**
 	 * Creates new JButton and adds it to the toolbar
 	 */
-	private void addButtonToToolbar(JToolBar toolbar, String btnName, String iconPath) {
-		JButton button = new JButton(btnName);
-		button.setIcon(new ImageIcon(ImageLoader.loadImage(iconPath)));
-		toolbar.add(button);
+	private void addButtonToToolbar(JToolBar toolbar, JButton btn, String tooltip, String iconPath) {
+		btn.setIcon(new ImageIcon(ImageLoader.loadImage(iconPath)));
+		btn.setToolTipText(tooltip);
+		toolbar.add(btn);
 	}
 	
 	/**
@@ -167,7 +172,29 @@ public class MainFrame extends JFrame {
 	public void clearTableSelection() {
 		dataTable.clearSelection();
 	}
-	
+
+	public void setStatusBarText(String text) {
+		statusBar.setStatusText(text);
+	}
+
+	public void enableCommands(boolean lock) {
+		menuItems.get("Save").setEnabled(lock);
+		menuItems.get("Save as").setEnabled(lock);
+		menuItems.get("Add row").setEnabled(lock);
+		menuItems.get("Add column").setEnabled(lock);
+		menuItems.get("Delete row").setEnabled(lock);
+		menuItems.get("Delete column").setEnabled(lock);
+
+		btnAddRow.setEnabled(lock);
+		btnDeleteRow.setEnabled(lock);
+		btnSave.setEnabled(lock);
+	}
+
+	public void scrollToBottom() {
+		JScrollBar scrolLBar = tableScroller.getVerticalScrollBar();
+		scrolLBar.setValue(scrolLBar.getMaximum());
+	}
+
 	public int[] getSelectedRows() {
 		return dataTable.getSelectedRows();
 	}
