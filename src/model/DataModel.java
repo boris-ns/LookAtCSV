@@ -31,6 +31,10 @@ public class DataModel extends AbstractTableModel {
 		return data.size();
 	}
 
+	public ArrayList<ArrayList<String>> getData() {
+		return data;
+	}
+
 	public void addRow() {
 		String[] row = new String[getColumnCount()];
 		data.add(new ArrayList<String>(Arrays.asList(row)));

@@ -2,17 +2,20 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.*;
 
 import common.Constants;
 import model.DataModel;
+import utils.Writer;
 import view.MainFrame;
 
 public class MainController {
 
 	private MainFrame view;
 	private DataModel model;
+	private String filePath;
 	
 	public MainController(MainFrame view, DataModel model) {
 		this.view = view;
@@ -26,6 +29,8 @@ public class MainController {
 		// File menu
 		view.setMenuItemListener(new NewListener(), "New");
 		view.setMenuItemListener(new OpenListener(), "Open");
+		view.setMenuItemListener(new SaveListener(), "Save");
+		view.setMenuItemListener(new SaveAsListener(), "Save as");
 		view.setMenuItemListener(new ExitListener(), "Exit");
 		
 		// Edit menu
@@ -43,7 +48,19 @@ public class MainController {
 		view.setToolbarBtnListener(new DeleteRowsListener(), 1);
 		view.setToolbarBtnListener(new SaveListener(), 2);
 	}
-	
+
+	private String openSaveAsDialog() {
+		String filePath = null;
+		JFileChooser chooser = new JFileChooser();
+		int retVal = chooser.showSaveDialog(chooser);
+
+		if(retVal == JFileChooser.APPROVE_OPTION) {
+			filePath = chooser.getSelectedFile().getAbsolutePath();
+		}
+
+		return filePath;
+	}
+
 	class NewListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -81,11 +98,11 @@ public class MainController {
 			int retVal = chooser.showOpenDialog(chooser);
 
 			if (retVal == JFileChooser.APPROVE_OPTION) {
-				String path = chooser.getSelectedFile().getAbsolutePath();
-				model.readData(path);
+				filePath = chooser.getSelectedFile().getAbsolutePath();
+				model.readData(filePath);
 				view.setTableModel(model);
 				view.setStatusBarText("Opened file with " + model.getDataSize() + " rows.");
-				view.setTitle(Constants.APP_NAME + " [" + path + "]");
+				view.setTitle(Constants.APP_NAME + " [" + filePath + "]");
 				view.enableCommands(true);
 			}
 		}
@@ -94,14 +111,29 @@ public class MainController {
 	class SaveListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Operation SAVE executed.");
+			if (filePath == null) {
+				if ((filePath = openSaveAsDialog()) == null) {
+					return;
+				}
+			}
+
+			Writer.writeToFile(model.getData(), filePath);
+			view.setStatusBarText("File successfully saved. Saved " + model.getDataSize() + " rows.");
 		}
 	}
 	
 	class SaveAsListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			
+			if ((filePath = openSaveAsDialog()) == null) {
+				return;
+			}
+
+			filePath += ".csv";
+
+			Writer.writeToFile(model.getData(), filePath);
+			view.setStatusBarText("File successfully saved. Saved. " + model.getDataSize() + " rows.");
+			view.setTitle(Constants.APP_NAME + " [" + filePath + "]");
 		}
 	}
 	
