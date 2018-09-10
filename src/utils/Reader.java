@@ -43,7 +43,6 @@ public class Reader {
 	 * Parses each line into tokens and fills Object[][] array which is returned.
 	 */
 	public static ArrayList<ArrayList<String>> readCSVData(String path) {
-		Object[][] data = null;
 		ArrayList<ArrayList<String>> dataList = new ArrayList<ArrayList<String>>();
 		
 		try {

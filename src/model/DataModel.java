@@ -8,6 +8,8 @@ import java.util.Arrays;
 
 public class DataModel extends AbstractTableModel {
 
+	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<String> header;
 	private ArrayList<ArrayList<String>> data;
 	
@@ -76,5 +78,10 @@ public class DataModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		return data.get(rowIndex).get(columnIndex);
+	}
+	
+	@Override
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		data.get(rowIndex).set(columnIndex, (String) value);
 	}
 }

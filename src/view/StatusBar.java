@@ -4,7 +4,9 @@ import javax.swing.*;
 
 public class StatusBar extends JPanel {
 
-    private JLabel label;
+	private static final long serialVersionUID = 1L;
+	
+	private JLabel label;
 
     public StatusBar(String text) {
         label = new JLabel(text);
