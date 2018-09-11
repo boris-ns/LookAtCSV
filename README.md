@@ -12,7 +12,7 @@ Few example .csv files are located in `csv_test_files` folder.
 
 ### Screenshots
 
-![application](screenshots/application.png)
+![application](screenshots/application2.png)
 
 ### TODO
 
