@@ -9,7 +9,7 @@ public class Writer {
 
     private static PrintWriter writer;
 
-    public static void writeToFile(ArrayList<ArrayList<String>> data, String path) {
+    public static void writeToFile(ArrayList<String> header, ArrayList<ArrayList<String>> data, String path) {
         StringBuilder line = new StringBuilder();
 
         try {
@@ -18,6 +18,13 @@ public class Writer {
             System.out.println("Error! File not found -> " + path);
             e.printStackTrace();
         }
+        
+        for (String token : header) {
+        	line.append(token + ",");
+        }
+        
+        writer.println(line);
+        line.delete(0, line.length());
 
         for (ArrayList<String> list : data) {
             for (String str : list) {

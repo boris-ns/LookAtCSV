@@ -19,7 +19,7 @@ public class MainController {
 	public MainController(MainFrame view, DataModel model) {
 		this.view = view;
 		this.model = model;
-
+		
 		addListenersForMenuItems();
 		addListenersForToolbarBtns();
 	}
@@ -98,6 +98,8 @@ public class MainController {
 
 			if (retVal == JFileChooser.APPROVE_OPTION) {
 				filePath = chooser.getSelectedFile().getAbsolutePath();
+				model = new DataModel(); // @Hack, @Fix: It's not good idea to do this here, but it's
+										 // a fix for loading multiple files one after another
 				model.readData(filePath);
 				view.setTableModel(model);
 				view.setStatusBarText("Opened file with " + model.getDataSize() + " rows.");
@@ -116,7 +118,7 @@ public class MainController {
 				}
 			}
 
-			Writer.writeToFile(model.getData(), filePath);
+			Writer.writeToFile(model.getHeader(), model.getData(), filePath);
 			view.setStatusBarText("File successfully saved. Saved " + model.getDataSize() + " rows.");
 		}
 	}
@@ -130,7 +132,7 @@ public class MainController {
 
 			filePath += ".csv";
 
-			Writer.writeToFile(model.getData(), filePath);
+			Writer.writeToFile(model.getHeader(), model.getData(), filePath);
 			view.setStatusBarText("File successfully saved. Saved. " + model.getDataSize() + " rows.");
 			view.setTitle(Constants.APP_NAME + " [" + filePath + "]");
 		}
@@ -163,8 +165,10 @@ public class MainController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String message = "How to use:\n"
-					+ "Use File->New to create new CSV file\n"
-					+ "You have options for adding rows and columns.";	
+					+ "File->New to create new CSV file\n"
+					+ "File->Open to open existing file\n"
+					+ "Edit->Add or delete row\n"
+					+ "Or double click on the cell to edit it's content.";	
 			
 			JOptionPane.showMessageDialog(null, message,
 					"How to use", JOptionPane.INFORMATION_MESSAGE);
@@ -208,6 +212,8 @@ public class MainController {
 			if (selectedRows.length == 0)
 				return;
 			
+			int numDeletedRows = selectedRows.length;
+			
 			// Removing must be from last to first, otherwise there will be exceptions
 			for (int i = selectedRows.length - 1; i >= 0; --i) {
 				model.removeRow(i);
@@ -218,7 +224,7 @@ public class MainController {
 			if (selectedRows.length == 1)
 				view.setStatusBarText("Row deleted.");
 			else
-				view.setStatusBarText("Multiple rows deleted.");
+				view.setStatusBarText(numDeletedRows + " rows deleted.");
 
 			view.clearTableSelection();
 		}
